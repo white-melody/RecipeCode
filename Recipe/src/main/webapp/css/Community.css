@@ -1,0 +1,42 @@
+ .card-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-meta {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    .card-body a {
+      text-decoration: none;
+      color: #000;
+    }
+
+    .card-body a:hover {
+      text-decoration: underline;
+    }
+
+    @media screen and (max-width: 768px) {
+      .btn-custom-brown {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .pagination {
+        justify-content: center !important;
+        flex-wrap: wrap;
+      }
+
+      .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .search-bar input[type="text"],
+      .search-bar button {
+        width: 100%;
+        margin-top: 5px;
+      }
+    }

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="egovframework.example.method.service.impl.MethodMapper">
+
+<!-- 1) 상세조회에 쓸 resultMap -->
+  <resultMap id="MethodWithUser" type="egovframework.example.method.service.MethodVO">
+    <id     property="uuid"            column="UUID"/>
+    <result property="userId"          column="USER_ID"/>
+    <result property="userNickname"    column="NICKNAME"/>
+    <result property="methodType"      column="METHOD_TYPE"/>
+    <result property="methodTitle"     column="METHOD_TITLE"/>
+    <result property="methodContent"   column="METHOD_CONTENT"/>
+    <result property="methodUrl"       column="METHOD_URL"/>
+    <result property="methodData"      column="METHOD_DATA"/>
+    <result property="category"        column="CATEGORY"/>
+    <result property="methodCreatedAt" column="METHOD_CREATED_AT"/>
+    <result property="authorProfileImage" column="PROFILE_IMAGE"/>
+  </resultMap>
+
+
+
+
+ <select id="selectMethodList"
+          parameterType="MethodVO"
+          resultType="MethodVO">
+    SELECT  UUID,
+      USER_ID,
+      METHOD_TYPE,
+      METHOD_TITLE,
+      METHOD_CONTENT,
+      METHOD_URL,
+      METHOD_DATA,
+      CATEGORY,
+      METHOD_CREATED_AT
+    FROM FOOD_METHODS
+       WHERE METHOD_TYPE = #{methodType} 
+     AND METHOD_TITLE LIKE '%' || #{searchKeyword} || '%'
+       <if test="category != null and category != ''">
+           <!-- 카테고리 필터 -->
+         AND CATEGORY = #{category}
+       </if>
+     ORDER BY METHOD_CREATED_AT DESC 
+    OFFSET #{firstIndex} ROWS
+    FETCH NEXT #{pageUnit} ROWS ONLY
+  </select>
+
+
+
+<select id="selectMethodListTotCnt"
+             parameterType="MethodVO"
+             resultType="int"
+             >
+	SELECT COUNT (*) FROM FOOD_METHODS
+	  WHERE METHOD_TYPE = #{methodType}
+	AND METHOD_TITLE LIKE '%' ||#{searchKeyword}|| '%'
+	<if test="category != null and category != ''">
+         AND CATEGORY = #{category}
+       </if>
+     </select>
+
+
+
+<insert id="insert" parameterType="MethodVO">
+  INSERT INTO FOOD_METHODS
+    (UUID, USER_ID,METHOD_TITLE,METHOD_CREATED_AT,
+     METHOD_URL,METHOD_CONTENT,METHOD_DATA,METHOD_TYPE, CATEGORY)
+  VALUES
+    (#{uuid}, #{userId}, #{methodTitle}, SYSDATE,
+     #{methodUrl}, #{methodContent}, #{methodData},#{methodType}, #{category})
+</insert>
+
+
+
+  <!-- 3) 상세조회: 사용자 닉네임 포함 -->
+  <select id="selectMethod"
+          parameterType="String"
+          resultMap="MethodWithUser">
+    SELECT
+      f.UUID,
+      f.USER_ID,
+      u.NICKNAME         AS NICKNAME,
+       u.PROFILE_IMAGE  AS PROFILE_IMAGE,
+      f.METHOD_TYPE,
+      f.METHOD_TITLE,
+      f.METHOD_CONTENT,
+      f.METHOD_URL,
+      f.METHOD_DATA,
+      f.CATEGORY,
+      f.METHOD_CREATED_AT
+    FROM FOOD_METHODS f
+    LEFT JOIN USERS u
+      ON f.USER_ID = u.USER_ID
+    WHERE f.UUID = #{uuid}
+  </select>
+
+
+   <delete id="delete"
+            parameterType="MethodVO">
+	DELETE FROM FOOD_METHODS
+	WHERE UUID=#{uuid}
+	 AND METHOD_TYPE = #{methodType}
+
+</delete>
+
+
+
+
+
+
+
+<update id="update" parameterType="egovframework.example.method.service.MethodVO">
+  UPDATE FOOD_METHODS
+     SET METHOD_TITLE     = #{methodTitle},
+         METHOD_CONTENT   = #{methodContent},
+         CATEGORY         = #{category},
+         METHOD_DATA      = #{methodData},
+         METHOD_URL       = #{methodUrl},
+         METHOD_CREATED_AT= SYSDATE
+   WHERE UUID = #{uuid}
+     AND METHOD_TYPE = #{methodType}
+</update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
